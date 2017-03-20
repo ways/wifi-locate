@@ -22,7 +22,7 @@ def linux_scan(device='wlan0'):
     Using the specified device (e.g. wlan0 or wlp3s0 or eth0), returns
     a list of wifi access point tuples.
     """
-    proc = subprocess.Popen(['iwlist', device, 'scan'],
+    proc = subprocess.Popen(['/sbin/iwlist', device, 'scan'],
                             stdout=subprocess.PIPE)
     output = proc.communicate()[0].decode('ascii')
     return [(tup[0], tup[2], tup[1]) for tup in re.findall(
