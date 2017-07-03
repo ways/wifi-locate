@@ -47,17 +47,22 @@ def osx_scan():
             output)]
 
 
-def locate(scan_result):
+def locate(scan_result, min_aps=0):
     """
     Given `scan_result` from `linux_scan` or `osx_scan`, returns the nested
     tuple `accuracy, (lat,lng)`.
+    Min_aps = minimum visible Access Points before a location is looked up. 0 = no limit.
     """
-    url = 'https://maps.googleapis.com/maps/api/browserlocation/json'
-    qs = [('browser', 'firefox'), ('sensor', 'true')]
-    qs.extend(('wifi', 'mac:{0}|ssid:{1}|ss:{2}'.format(*tup))
-              for tup in scan_result)
-    response = requests.get(url, params=qs)
-    res = response.json()
 
-    return res['accuracy'], \
-        (res['location']['lat'], res['location']['lng'])
+    if (0 != min_aps and len(scan_result) >= min_aps):
+        url = 'https://maps.googleapis.com/maps/api/browserlocation/json'
+        qs = [('browser', 'firefox'), ('sensor', 'true')]
+        qs.extend(('wifi', 'mac:{0}|ssid:{1}|ss:{2}'.format(*tup))
+                  for tup in scan_result)
+        response = requests.get(url, params=qs)
+        res = response.json()
+    
+        return res['accuracy'], \
+            (res['location']['lat'], res['location']['lng'])
+    else:
+        return False, (False, False)
